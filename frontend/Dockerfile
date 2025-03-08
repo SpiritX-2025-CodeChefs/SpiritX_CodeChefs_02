@@ -6,7 +6,7 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 COPY package.json yarn.lock .npmrc .yarnrc.yml ./
-RUN corepack enable yarn && yarn install
+RUN yarn install
 
 FROM base AS builder
 
@@ -17,7 +17,7 @@ COPY . .
 
 ENV NEXT_TELEMETRY_DISABLED=1
 
-RUN corepack enable yarn && yarn build
+RUN yarn build
 
 FROM base AS runner
 WORKDIR /app
