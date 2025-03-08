@@ -82,12 +82,12 @@ export default function SignIn() {
               </Button>
             </div>
             <div className="mt-8 text-center">
-              <p className="text-sm dark:text-gray-300 text-gray-600">
+              <div className="text-sm dark:text-gray-300 text-gray-600">
                 Don't have an account?{" "}
                 <Link href="/signup">
                   <p className="text-sm text-blue-500 cursor-pointer">Sign up!</p>
                 </Link>
-              </p>
+              </div>
             </div>
           </form>
           <AuthModal
