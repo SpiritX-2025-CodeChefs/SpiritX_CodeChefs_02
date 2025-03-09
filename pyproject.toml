@@ -1,0 +1,18 @@
+[project]
+name = "spiritx-codechefs-02"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "boto3>=1.37.9",
+    "fastapi[standard]>=0.115.11",
+    "motor>=3.7.0",
+    "openai>=1.65.4",
+    "python-dotenv>=1.0.1",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.9.10",
+]
