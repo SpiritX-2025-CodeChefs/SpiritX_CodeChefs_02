@@ -1,25 +1,27 @@
 import type { NextRequest } from "next/server";
 
 import { NextResponse } from "next/server";
-import { AuthResult } from "@/types/auth";
+import { upfetch } from "./upfetch";
+import { z } from "zod";
 
 export async function makeAuthRequest(
   request: NextRequest,
-): Promise<AuthResult | null> {
+) {
   try {
-    const response = await fetch(`${request.nextUrl.origin}/api/auth/validate-session`, {
+    const response = await upfetch(`${request.nextUrl.origin}/api/auth/validate-session`, {
+      method: "POST",
       headers: {
         cookie: request.headers.get("cookie") || "",
         Accept: "application/json",
         "Content-Type": "application/json",
       },
+      schema: z.object({
+        success: z.boolean(),
+        role: z.string().optional().nullable(),
+      })
     });
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    return (await response.json()) as AuthResult;
+    return response
   } catch {
     return null;
   }
@@ -28,7 +30,7 @@ export async function makeAuthRequest(
 export async function handleDashboardRoute(
   request: NextRequest,
 ): Promise<NextResponse | null> {
-  const session = (await makeAuthRequest(request))?.session;
+  const session = (await makeAuthRequest(request))?.success;
 
   if (!session) {
     return NextResponse.redirect(new URL("/login", request.url));
@@ -47,7 +49,7 @@ export async function handleDashboardRoute(
 export async function handleLoginRoute(
   request: NextRequest,
 ): Promise<NextResponse | null> {
-  const session = (await makeAuthRequest(request))?.session;
+  const session = (await makeAuthRequest(request))?.success;
 
   if (session) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
@@ -103,7 +105,7 @@ export async function handleSignupRoute(
 export async function handleOnboardingRoute(
   request: NextRequest,
 ): Promise<NextResponse | null> {
-  const session = (await makeAuthRequest(request))?.session;
+  const session = (await makeAuthRequest(request))?.success;
   const onboardingToken = request.cookies.get("onboarding_tok");
 
   if (!session || !onboardingToken) {

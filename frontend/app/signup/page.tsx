@@ -5,6 +5,9 @@ import Link from "next/link";
 
 import AuthModal from "@/components/modal";
 import ThemeModal from "@/components/theme-modal";
+import { upfetch } from "@/lib/utils";
+import { z } from "zod";
+
 export default function SignUp() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -25,7 +28,7 @@ export default function SignUp() {
       return;
     }
 
-    const response = await fetch("/api/auth/register", {
+    const response = await upfetch("/api/auth/register", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -34,12 +37,15 @@ export default function SignUp() {
         username,
         password,
       }),
+      schema: z.object({
+        detail: z.string().nullable().optional(),
+        success: z.boolean(),
+      })
     });
 
-    if (!response.ok) {
-      const error = await response.json();
+    if (!response.success) {
       setTitle("Register Error");
-      setBody(error.message!);
+      setBody(response.detail || "An error occurred.");
       onOpen();
       setSpinner(false);
       return;

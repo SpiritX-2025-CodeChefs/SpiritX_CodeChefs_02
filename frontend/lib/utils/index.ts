@@ -6,3 +6,4 @@ export {
   handleOnboardingRoute,
   handleRegisterSuccessRoute,
 } from "./middlewareUtils";
+export { upfetch } from "./upfetch";

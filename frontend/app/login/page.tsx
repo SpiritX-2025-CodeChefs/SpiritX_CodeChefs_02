@@ -5,6 +5,8 @@ import { useState } from "react";
 
 import AuthModal from "@/components/modal";
 import ThemeModal from "@/components/theme-modal";
+import { upfetch } from "@/lib/utils";
+import { z } from "zod";
 
 export default function SignIn() {
   const [username, setUsername] = useState("");
@@ -17,7 +19,7 @@ export default function SignIn() {
     e.preventDefault();
     setSpinner(true);
 
-    const response = await fetch("/api/auth/login", {
+    const response = await upfetch("/api/auth/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -26,9 +28,14 @@ export default function SignIn() {
         username,
         password,
       }),
+      schema: z.object({
+        success: z.boolean(),
+        role: z.string().optional().nullable(),
+        detail: z.string().optional().nullable(),
+      }),
     });
 
-    if (response.status !== 200) {
+    if (!response.success) {
       setBody("An error occurred. Please try again later.");
       setTitle("Error");
       onOpen();
@@ -36,12 +43,10 @@ export default function SignIn() {
       return;
     }
 
-    const data = await response.json() as { success: boolean, message: string };
-
-    if (data.success) {
+    if (response.success) {
       window.location.href = `${window.location.origin}/dashboard`;
     } else {
-      setBody(data.message);
+      setBody(response.detail || "An error occurred. Please try again later.");
       setTitle("Login Error");
       onOpen();
     }
