@@ -1,12 +1,11 @@
 "use client";
 import { useState, useEffect } from "react";
 
-import AdminSidebar from "@/componentsSidebar";
+import Sidebar from "@/components/sidebar";
 
 export default function Layout({ children }) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isHydrated, setIsHydrated] = useState(false);
-  const [role, setRole] = useState("");
 
   useEffect(() => {
     // Mark the component as hydrated
@@ -18,11 +17,6 @@ export default function Layout({ children }) {
     const shouldCollapse = sidebarState || window.innerWidth < 768;
 
     setIsCollapsed(shouldCollapse);
-
-    // Get the current user role
-    const role = window.localStorage.getItem("role");
-
-    setRole(role);
   }, []);
 
   useEffect(() => {
@@ -39,9 +33,8 @@ export default function Layout({ children }) {
 
   return (
     <div className="flex h-full">
-      <AdminSidebar
+      <Sidebar
         isCollapsed={isCollapsed}
-        role={role}
         setIsCollapsed={setIsCollapsed}
       />
       <main className="flex-grow container mx-auto max-w-7xl px-6">
